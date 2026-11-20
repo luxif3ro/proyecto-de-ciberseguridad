@@ -1,0 +1,33 @@
+@import "tailwindcss";
+/*
+ROSAS:
+#e66d98
+#f29bb6
+BLANCO APERLADO:
+#FFF0F4
+CAFÉ:
+#CAA07F
+#91664B
+BLANCO:
+#F5F7F8
+AZULES:
+#D7E0E4
+#7FBAC6
+#2E7E95
+*/
+body {
+    background-color: #F5F7F8;
+}
+
+@theme {
+    --color-principal: #2E7E95; /* Color principal (Azul) PARA NAVBAR, BOTONES PRINCIPALES, LINKS, ESTADOS ACTIVOS*/
+    --color-secundario: #7FBAC6;
+    --color-fondo-principal: #F5F7F8;
+    --color-fondo-secundario: #D7E0E4;
+    --color-cafe-principal: #91664B;
+    --color-cafe-secundario: #CAA07F;
+    --color-trojes-principal: #E66D98;
+    --color-trojes-secundario: #F29BB6;
+    --color-trojes-blanco: #FFF0F4;
+    --color-divisor: #CAA07F; /* Color para divisores o líneas separadoras */
+}
