@@ -1,0 +1,113 @@
+services:
+  frontend:
+    build:
+      context: ./radiologia-santa-imelda
+      dockerfile: Dockerfile
+    container_name: citas-frontend
+    expose:
+      - "3000"
+    networks:
+      - citas-network
+
+  api:
+    build:
+      context: ./api-posgres
+      dockerfile: Dockerfile
+    container_name: citas-api
+    expose:
+      - "8000"
+    depends_on:
+      - db
+    networks:
+      - citas-network
+
+  db:
+    image: postgres:16
+    container_name: citas-db
+
+    environment:
+      POSTGRES_DB: santa_imelda
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db-santa-imelda/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    networks:
+      - citas-network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: citas-nginx
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    depends_on:
+      - frontend
+      - api
+
+    networks:
+      - citas-network
+
+  dns:
+    build:
+      context: ./dns
+      dockerfile: Dockerfile
+    container_name: citas-dns
+
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+
+    networks:
+      - citas-network
+
+  frontend-vulnerado:
+    build:
+      context: ./radiologia-santa-imelda-vulnerado
+      dockerfile: Dockerfile
+    container_name: citas-frontend-vulnerado
+    expose:
+      - "3000"
+    networks:
+      - citas-network
+
+  servidor-atacante:
+    build:
+      context: ./servidor-atacante
+      dockerfile: Dockerfile
+    container_name: servidor-atacante
+    ports:
+      - "9000:9000"
+    environment:
+      MONGO_URI: mongodb://db-atacante:27017
+      MONGO_DB: laboratorio
+    depends_on:
+      - db-atacante
+    networks:
+      - citas-network
+
+  db-atacante:
+    image: mongo:8
+    container_name: db-atacante
+    restart: unless-stopped
+    volumes:
+      - mongo_atacante:/data/db
+    networks:
+      - citas-network
+  
+volumes:
+  postgres_data:
+  mongo_atacante:
+
+networks:
+  citas-network:
+    driver: bridge
